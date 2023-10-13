@@ -5,20 +5,16 @@ import "./App.css"
 function App() {
   const [movies, setMovies] = useState([])
 
-  const getMovies = () => {
-    fetch("https://swapi.dev/api/films")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Network response was not ok")
-        }
-        return res.json()
-      })
-      .then((data) => {
-        setMovies(data.results)
-      })
-      .catch((error) => {
-        console.error("Error fetching movies:", error)
-      })
+  async function getMovies() {
+    try {
+      const response = await fetch("https://swapi.dev/api/films")
+
+      const data = await response.json()
+      setMovies(data.results)
+    } catch (error) {
+      console.error("Error fetching user data:", error)
+      throw error // You can re-throw the error or handle it as needed
+    }
   }
 
   return (
