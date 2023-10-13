@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from "react"
 import MoviesList from "./components/MoviesList"
+import Loader from "./components/Loader"
 import "./App.css"
 
 function App() {
   const [movies, setMovies] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
 
   async function getMovies() {
     try {
+      setIsLoading(true)
       const response = await fetch("https://swapi.dev/api/films")
-
+      setIsLoading(false)
       const data = await response.json()
       setMovies(data.results)
     } catch (error) {
       console.error("Error fetching user data:", error)
-      throw error // You can re-throw the error or handle it as needed
+      throw error
     }
   }
 
@@ -29,7 +32,7 @@ function App() {
         </button>
       </section>
       <section>
-        <MoviesList movies={movies} />
+        {isLoading ? <Loader /> : <MoviesList movies={movies} />}
       </section>
     </React.Fragment>
   )
