@@ -5,25 +5,23 @@ import "./App.css"
 
 function App() {
   const [movies, setMovies] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [retrying, setRetrying] = useState(false)
 
-  async function getMovies() {
-    try {
-      setIsLoading(true)
+  const getMovies = async () => {
+    setError(null)
+    setIsLoading(true)
 
-      const response = await fetch("https://swapi.dev/api/film/")
+    try {
+      const response = await fetch("https://swapi.dev/api/films")
       if (!response.ok) {
-        throw new Error("Something went wrong...retrying")
+        throw new Error("Network response was not ok..Retrying...")
       }
       const data = await response.json()
-
-      console.log(response.ok)
       setMovies(data.results)
       setIsLoading(false)
     } catch (err) {
-      console.log(err.message)
       setError(err.message)
       setRetrying(true)
 
@@ -33,21 +31,18 @@ function App() {
           return
         }
         try {
-          const response = await fetch("https://swapi.dev/api/film")
+          const response = await fetch("https://swapi.dev/api/films")
           if (!response.ok) {
-            throw new Error("something went wrong...retrying")
+            throw new Error("Retrying")
           }
           const data = await response.json()
-
           setMovies(data.results)
-
+          setError(null)
           setIsLoading(false)
           setRetrying(false)
           clearInterval(retryInterval)
         } catch (err) {
-          console.log(err)
           setError(err.message)
-          console.log(err)
         }
       }, 5000)
     }
@@ -55,8 +50,13 @@ function App() {
 
   const cancelRetry = () => {
     setRetrying(false)
-    console.log(error)
+    setIsLoading(false)
+    setError("Failed to fetch data")
   }
+
+  useEffect(() => {
+    getMovies()
+  }, [])
 
   return (
     <React.Fragment>
@@ -64,16 +64,21 @@ function App() {
         <button onClick={() => getMovies()}>Fetch Movies</button>
       </section>
       <section>
-        {retrying && <button onClick={cancelRetry}>Cancel Retry</button>}
-
-        {retrying && isLoading ? (
+        {isLoading && !retrying && <Loader />}
+        {isLoading && retrying ? (
           <div>
             <Loader />
+            <h1 className=" mt-3">{error}</h1>
           </div>
         ) : error ? (
           <div>Error: {error}</div>
         ) : (
           <MoviesList movies={movies} />
+        )}
+        {retrying && (
+          <button className="mt-3" onClick={cancelRetry}>
+            Cancel Retry
+          </button>
         )}
       </section>
     </React.Fragment>
