@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import MoviesList from "./components/MoviesList"
 import Loader from "./components/Loader"
 import "./App.css"
+import InputForm from "./components/InputForm"
 
 function App() {
   const [movies, setMovies] = useState([])
@@ -9,7 +10,7 @@ function App() {
   const [error, setError] = useState(null)
   const [retrying, setRetrying] = useState(false)
 
-  const getMovies = async () => {
+  const getMovies = useCallback(async () => {
     setError(null)
     setIsLoading(true)
 
@@ -46,7 +47,7 @@ function App() {
         }
       }, 5000)
     }
-  }
+  })
 
   const cancelRetry = () => {
     setRetrying(false)
@@ -60,6 +61,9 @@ function App() {
 
   return (
     <React.Fragment>
+      <section>
+        <InputForm></InputForm>
+      </section>
       <section>
         <button onClick={() => getMovies()}>Fetch Movies</button>
       </section>
