@@ -4,14 +4,17 @@ import Movie from "./Movie"
 import classes from "./MoviesList.module.css"
 
 const MovieList = (props) => {
+  console.log(props.id)
   return (
     <ul className={classes["movies-list"]}>
       {props.movies.map((movie) => (
         <Movie
-          key={movie.episode_id}
+          moviesHandler={props.moviesHandler}
+          id={props.id}
           title={movie.title}
-          releaseDate={movie.release_date}
-          openingText={movie.opening_crawl}
+          releaseDate={movie.releaseDate}
+          openingText={movie.openingText}
+          getMovies={props.getMovies}
         />
       ))}
     </ul>
